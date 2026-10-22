@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f8f1e8">
+  <meta name="description" content="Ein kleiner, privater Ort für die schönsten Momente des Tages.">
+  <title>Zwischen uns</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <style>
+    :root{color-scheme:light;--paper:#fbf7f1;--card:#fffdf9;--ink:#3d342f;--muted:#897c72;--rose:#c98278;--rose-dark:#9e5e56;--line:#eaded2;--sage:#dce5d8}
+    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
+    main{max-width:520px;margin:auto;padding:calc(28px + env(safe-area-inset-top)) 20px calc(36px + env(safe-area-inset-bottom))}
+    .eyebrow{text-transform:uppercase;letter-spacing:.16em;font-size:11px;color:var(--rose-dark);font-weight:700}
+    h1{font-family:Georgia,serif;font-weight:500;font-size:42px;line-height:1.05;margin:12px 0 10px;letter-spacing:-.04em}
+    .intro{color:var(--muted);line-height:1.6;margin:0 0 24px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px;margin:16px 0;box-shadow:0 8px 28px #6e4a3510}
+    .topline{display:flex;justify-content:space-between;align-items:center;gap:12px}
+    .pill{background:var(--sage);border-radius:99px;padding:7px 10px;font-size:12px;color:#425541;white-space:nowrap}
+    h2{font-family:Georgia,serif;font-weight:500;font-size:24px;margin:0 0 8px}
+    label{display:block;font-size:14px;font-weight:650;margin:18px 0 8px}
+    input,textarea{width:100%;border:1px solid var(--line);border-radius:13px;background:#fffefa;color:var(--ink);font:inherit;padding:13px 14px;outline-color:var(--rose)}
+    textarea{resize:vertical;min-height:130px;line-height:1.5}input::placeholder,textarea::placeholder{color:#b4a69b}
+    button{width:100%;border:0;border-radius:14px;background:var(--rose);color:white;font:inherit;font-weight:650;padding:14px 16px;margin-top:14px;cursor:pointer}
+    button:active{transform:scale(.99)}button.secondary{background:#f3e6de;color:var(--rose-dark)}
+    button:disabled{opacity:.45;cursor:not-allowed}
+    .note{font-size:12px;color:var(--muted);line-height:1.5}
+    .divider{height:1px;background:var(--line);margin:18px 0}
+    .empty{padding:18px;border-radius:14px;background:#f8f0e9;color:var(--muted);line-height:1.55;font-size:14px}
+    .entry{white-space:pre-wrap;line-height:1.6;background:#f8f0e9;border-radius:14px;padding:14px;margin-top:12px}
+    .hidden{display:none!important}
+    footer{text-align:center;color:var(--muted);font-size:12px;line-height:1.6;padding:10px 12px}
+    .notice{font-size:13px;line-height:1.5;border-left:3px solid var(--rose);padding:10px 12px;background:#f8f0e9;border-radius:0 10px 10px 0}
+  </style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">Ein kleiner Ort nur für euch zwei</div>
+  <h1>Zwischen uns<span style="color:var(--rose)">.</span></h1>
+  <p class="intro">Einmal am Tag innehalten. Den schönsten Moment festhalten. Und ihn miteinander teilen.</p>
+  <section class="card">
+    <div class="topline"><h2>Der Moment des Tages</h2><span class="pill" id="dateLabel">Heute</span></div>
+    <p class="note">Stell dir vor, ihr sitzt euch mit einer Tasse Tee gegenüber und erzählt euch vom Tag.</p>
+    <label for="moment">Was war heute dein schönster Moment?</label>
+    <textarea id="moment" maxlength="1200" placeholder="Vielleicht etwas ganz Kleines …" aria-describedby="privacyNote"></textarea>
+    <div class="topline"><span class="note" id="counter">0 / 1200</span><span class="note">Nur für euch zwei</span></div>
+    <button id="save">Moment für heute vormerken</button>
+    <p class="notice" id="privacyNote">Dies ist zunächst eine lokale Vorschau. Der Text bleibt auf diesem Gerät und wird noch nicht an deine Freundin übertragen.</p>
+  </section>
+  <section class="card">
+    <div class="topline"><h2>Euer gemeinsamer Tag</h2><span class="pill">Privat gedacht</span></div>
+    <div id="status" class="empty">Wenn beide ihren Moment eingetragen haben, sollt ihr die Einträge hier gemeinsam lesen können. Diese Synchronisierung wird als nächster Schritt mit Supabase eingerichtet.</div>
+    <div id="savedArea" class="hidden">
+      <div class="divider"></div><div class="eyebrow">Dein Entwurf auf diesem Gerät</div>
+      <div class="entry" id="savedText"></div>
+      <button class="secondary" id="clear">Entwurf auf diesem Gerät löschen</button>
+    </div>
+  </section>
+  <section class="card">
+    <h2>Ein lieber Gedanke</h2>
+    <p class="intro" style="margin-bottom:0">Jede von euch darf den Moment der anderen einmal kommentieren. Ein Kommentar soll danach unveränderlich sein – wie eine kleine Notiz, die bleibt.</p>
+    <div class="divider"></div>
+    <p class="note">Kommentare und Benachrichtigungen werden erst aktiviert, wenn Anmeldung, sichere Synchronisierung und Berechtigungen eingerichtet sind.</p>
+  </section>
+  <footer>Mit Wärme gemacht · Zwischen uns<br>Diese Vorschau ist noch kein sicherer, synchronisierter Privatdienst.</footer>
+</main>
+<script>
+  const $ = (id) => document.getElementById(id);
+  const date = new Intl.DateTimeFormat('de-DE',{weekday:'long',day:'numeric',month:'long'}).format(new Date());
+  $('dateLabel').textContent = date;
+  $('moment').value = '';
+  $('moment').addEventListener('input',()=> $('counter').textContent = $('moment').value.length + ' / 1200');
+  const key = 'zwischen-uns-draft-v1';
+  try {
+    const draft = localStorage.getItem(key);
+    if (draft) showDraft(draft);
+  } catch (_) {}
+  function showDraft(value){ $('savedText').textContent = value; $('savedArea').classList.remove('hidden'); $('status').textContent = 'Dein Entwurf ist auf diesem Gerät gespeichert. Der Moment deiner Freundin ist noch nicht synchronisiert.'; }
+  $('save').addEventListener('click',()=>{
+    const value = $('moment').value.trim();
+    if (!value) { $('moment').focus(); $('moment').setCustomValidity('Schreib erst deinen schönsten Moment auf.'); $('moment').reportValidity(); $('moment').setCustomValidity(''); return; }
+    try { localStorage.setItem(key,value); showDraft(value); $('moment').value=''; $('counter').textContent='0 / 1200'; $('privacyNote').textContent='Gespeichert nur auf diesem Gerät – noch nicht verschlüsselt übertragen oder mit deiner Freundin geteilt.'; }
+    catch (_) { alert('Der Entwurf konnte nicht gespeichert werden.'); }
+  });
+  $('clear').addEventListener('click',()=>{try{localStorage.removeItem(key);}catch(_){} $('savedArea').classList.add('hidden');$('savedText').textContent='';$('status').textContent='Dein lokaler Entwurf wurde gelöscht. Eine Synchronisierung ist noch nicht eingerichtet.';});
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
+</body>
+</html>
