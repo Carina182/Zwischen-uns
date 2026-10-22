@@ -1,0 +1,12 @@
+{
+  "name": "Zwischen uns",
+  "short_name": "Zwischen uns",
+  "description": "Ein privater Ort für eure schönsten Tagesmomente.",
+  "lang": "de-DE",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fbf7f1",
+  "theme_color": "#f8f1e8",
+  "icons": []
+}
