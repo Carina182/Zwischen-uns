@@ -1,89 +1,503 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#f8f1e8">
-  <meta name="description" content="Ein kleiner, privater Ort für die schönsten Momente des Tages.">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f1ed">
   <title>Zwischen uns</title>
-  <link rel="manifest" href="./manifest.webmanifest">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    :root{color-scheme:light;--paper:#fbf7f1;--card:#fffdf9;--ink:#3d342f;--muted:#897c72;--rose:#c98278;--rose-dark:#9e5e56;--line:#eaded2;--sage:#dce5d8}
-    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
-    main{max-width:520px;margin:auto;padding:calc(28px + env(safe-area-inset-top)) 20px calc(36px + env(safe-area-inset-bottom))}
-    .eyebrow{text-transform:uppercase;letter-spacing:.16em;font-size:11px;color:var(--rose-dark);font-weight:700}
-    h1{font-family:Georgia,serif;font-weight:500;font-size:42px;line-height:1.05;margin:12px 0 10px;letter-spacing:-.04em}
-    .intro{color:var(--muted);line-height:1.6;margin:0 0 24px}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px;margin:16px 0;box-shadow:0 8px 28px #6e4a3510}
-    .topline{display:flex;justify-content:space-between;align-items:center;gap:12px}
-    .pill{background:var(--sage);border-radius:99px;padding:7px 10px;font-size:12px;color:#425541;white-space:nowrap}
-    h2{font-family:Georgia,serif;font-weight:500;font-size:24px;margin:0 0 8px}
-    label{display:block;font-size:14px;font-weight:650;margin:18px 0 8px}
-    input,textarea{width:100%;border:1px solid var(--line);border-radius:13px;background:#fffefa;color:var(--ink);font:inherit;padding:13px 14px;outline-color:var(--rose)}
-    textarea{resize:vertical;min-height:130px;line-height:1.5}input::placeholder,textarea::placeholder{color:#b4a69b}
-    button{width:100%;border:0;border-radius:14px;background:var(--rose);color:white;font:inherit;font-weight:650;padding:14px 16px;margin-top:14px;cursor:pointer}
-    button:active{transform:scale(.99)}button.secondary{background:#f3e6de;color:var(--rose-dark)}
-    button:disabled{opacity:.45;cursor:not-allowed}
-    .note{font-size:12px;color:var(--muted);line-height:1.5}
-    .divider{height:1px;background:var(--line);margin:18px 0}
-    .empty{padding:18px;border-radius:14px;background:#f8f0e9;color:var(--muted);line-height:1.55;font-size:14px}
-    .entry{white-space:pre-wrap;line-height:1.6;background:#f8f0e9;border-radius:14px;padding:14px;margin-top:12px}
-    .hidden{display:none!important}
-    footer{text-align:center;color:var(--muted);font-size:12px;line-height:1.6;padding:10px 12px}
-    .notice{font-size:13px;line-height:1.5;border-left:3px solid var(--rose);padding:10px 12px;background:#f8f0e9;border-radius:0 10px 10px 0}
+    :root {
+      --cream: #faf5f0;
+      --rose: #d9aaa7;
+      --dark: #493b39;
+      --muted: #8b7773;
+      --white: #fffdfb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 28px 16px 50px;
+      background: var(--cream);
+      color: var(--dark);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.6;
+    }
+    main { max-width: 520px; margin: auto; }
+    header { text-align: center; padding: 25px 0 30px; }
+    .heart { font-size: 28px; color: #bd8585; }
+    h1 { font-weight: normal; font-size: 38px; margin: 5px 0; }
+    .subtitle { color: var(--muted); font-style: italic; }
+    section {
+      background: var(--white);
+      border: 1px solid #eee1da;
+      border-radius: 18px;
+      padding: 22px;
+      margin: 16px 0;
+      box-shadow: 0 5px 20px #76554b0a;
+    }
+    h2 { font-size: 22px; font-weight: normal; margin: 0 0 12px; }
+    p { margin-top: 6px; }
+    label { display: block; margin: 13px 0 5px; font-size: 14px; }
+    input, textarea {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #e5d4cd;
+      border-radius: 10px;
+      background: #fff;
+      color: var(--dark);
+      font: 16px Arial, sans-serif;
+    }
+    textarea { min-height: 120px; resize: vertical; }
+    button {
+      width: 100%;
+      border: 0;
+      border-radius: 10px;
+      padding: 13px 15px;
+      margin-top: 12px;
+      background: var(--rose);
+      color: #392c2a;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    button.secondary { background: #f0e5df; }
+    button:disabled { opacity: .55; cursor: wait; }
+    .hidden { display: none !important; }
+    .message { font: 14px Arial, sans-serif; overflow-wrap: anywhere; }
+    .error { color: #a13f3f; }
+    .success { color: #416b4b; }
+    .moment {
+      padding: 15px 0;
+      border-bottom: 1px solid #eee1da;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    .moment:last-child { border-bottom: 0; }
+    .date { color: var(--muted); font-size: 13px; }
+    .small { color: var(--muted); font: 13px/1.5 Arial, sans-serif; }
+    .invite {
+      background: #f7eee9;
+      padding: 12px;
+      border-radius: 10px;
+      overflow-wrap: anywhere;
+      font: 14px monospace;
+    }
+    footer { text-align: center; padding: 20px; color: var(--muted); font-size: 13px; }
   </style>
 </head>
 <body>
 <main>
-  <div class="eyebrow">Ein kleiner Ort nur für euch zwei</div>
-  <h1>Zwischen uns<span style="color:var(--rose)">.</span></h1>
-  <p class="intro">Einmal am Tag innehalten. Den schönsten Moment festhalten. Und ihn miteinander teilen.</p>
-  <section class="card">
-    <div class="topline"><h2>Der Moment des Tages</h2><span class="pill" id="dateLabel">Heute</span></div>
-    <p class="note">Stell dir vor, ihr sitzt euch mit einer Tasse Tee gegenüber und erzählt euch vom Tag.</p>
-    <label for="moment">Was war heute dein schönster Moment?</label>
-    <textarea id="moment" maxlength="1200" placeholder="Vielleicht etwas ganz Kleines …" aria-describedby="privacyNote"></textarea>
-    <div class="topline"><span class="note" id="counter">0 / 1200</span><span class="note">Nur für euch zwei</span></div>
-    <button id="save">Moment für heute vormerken</button>
-    <p class="notice" id="privacyNote">Dies ist zunächst eine lokale Vorschau. Der Text bleibt auf diesem Gerät und wird noch nicht an deine Freundin übertragen.</p>
+  <header>
+    <div class="heart">♡</div>
+    <h1>Zwischen uns</h1>
+    <div class="subtitle">Ein kleiner Ort nur für euch.</div>
+  </header>
+
+  <section id="auth">
+    <h2>Schön, dass du da bist.</h2>
+    <p>Erstelle dein Konto oder melde dich an, um eure gemeinsamen Momente festzuhalten.</p>
+    <form id="authForm">
+      <label for="email">E-Mail-Adresse</label>
+      <input id="email" type="email" autocomplete="email" required>
+      <label for="password">Passwort (mindestens 8 Zeichen)</label>
+      <input id="password" type="password" autocomplete="current-password" minlength="8" required>
+      <button type="submit">Anmelden</button>
+    </form>
+    <button id="register" class="secondary">Neues Konto erstellen</button>
+    <p id="authMessage" class="message" aria-live="polite"></p>
   </section>
-  <section class="card">
-    <div class="topline"><h2>Euer gemeinsamer Tag</h2><span class="pill">Privat gedacht</span></div>
-    <div id="status" class="empty">Wenn beide ihren Moment eingetragen haben, sollt ihr die Einträge hier gemeinsam lesen können. Diese Synchronisierung wird als nächster Schritt mit Supabase eingerichtet.</div>
-    <div id="savedArea" class="hidden">
-      <div class="divider"></div><div class="eyebrow">Dein Entwurf auf diesem Gerät</div>
-      <div class="entry" id="savedText"></div>
-      <button class="secondary" id="clear">Entwurf auf diesem Gerät löschen</button>
-    </div>
+
+  <section id="roomSetup" class="hidden">
+    <h2>Euer privater Raum</h2>
+    <p>Du kannst einen Raum erstellen oder mit einem Einladungscode einem bestehenden Raum beitreten.</p>
+    <button id="createRoom">Neuen Raum erstellen</button>
+    <label for="inviteInput">Einladungscode eingeben</label>
+    <input id="inviteInput" autocomplete="off" placeholder="Einladungscode">
+    <button id="joinRoom" class="secondary">Raum beitreten</button>
+    <div id="roomMessage" class="message" aria-live="polite"></div>
   </section>
-  <section class="card">
-    <h2>Ein lieber Gedanke</h2>
-    <p class="intro" style="margin-bottom:0">Jede von euch darf den Moment der anderen einmal kommentieren. Ein Kommentar soll danach unveränderlich sein – wie eine kleine Notiz, die bleibt.</p>
-    <div class="divider"></div>
-    <p class="note">Kommentare und Benachrichtigungen werden erst aktiviert, wenn Anmeldung, sichere Synchronisierung und Berechtigungen eingerichtet sind.</p>
+
+  <section id="inviteSection" class="hidden">
+    <h2>Dein Einladungscode</h2>
+    <p>Teile diesen Code ausschließlich mit der Person, mit der du diesen Raum nutzen möchtest. Bewahre ihn sicher auf.</p>
+    <div id="inviteCode" class="invite"></div>
+    <button id="copyInvite">Code kopieren</button>
+    <p class="small">Der Code wird zum Beitreten und zum Entschlüsseln eurer Einträge benötigt. Wer ihn verliert, kann möglicherweise nicht mehr auf die verschlüsselten Einträge zugreifen.</p>
   </section>
-  <footer>Mit Wärme gemacht · Zwischen uns<br>Diese Vorschau ist noch kein sicherer, synchronisierter Privatdienst.</footer>
+
+  <section id="journal" class="hidden">
+    <h2>Ein Moment für heute</h2>
+    <p>Was möchtest du festhalten? Ein Gedanke, ein Gefühl oder etwas, das euch verbindet.</p>
+    <label for="momentDate">Datum</label>
+    <input id="momentDate" type="date">
+    <label for="momentText">Dein Moment</label>
+    <textarea id="momentText" maxlength="10000" placeholder="Heute möchte ich dir erzählen …"></textarea>
+    <button id="saveMoment">Moment speichern</button>
+    <p id="saveMessage" class="message" aria-live="polite"></p>
+  </section>
+
+  <section id="history" class="hidden">
+    <h2>Was zwischen uns bleibt</h2>
+    <div id="momentsList"><p class="small">Noch keine Momente geladen.</p></div>
+    <button id="refresh" class="secondary">Momente aktualisieren</button>
+  </section>
+
+  <section id="account" class="hidden">
+    <p id="accountLabel" class="small"></p>
+    <button id="leaveRoom" class="secondary">Diesen Raum auf diesem Gerät verlassen</button>
+    <button id="logout" class="secondary">Abmelden</button>
+  </section>
+
+  <footer>Mit Liebe gestaltet · Zwischen uns ♡</footer>
 </main>
+
 <script>
-  const $ = (id) => document.getElementById(id);
-  const date = new Intl.DateTimeFormat('de-DE',{weekday:'long',day:'numeric',month:'long'}).format(new Date());
-  $('dateLabel').textContent = date;
-  $('moment').value = '';
-  $('moment').addEventListener('input',()=> $('counter').textContent = $('moment').value.length + ' / 1200');
-  const key = 'zwischen-uns-draft-v1';
-  try {
-    const draft = localStorage.getItem(key);
-    if (draft) showDraft(draft);
-  } catch (_) {}
-  function showDraft(value){ $('savedText').textContent = value; $('savedArea').classList.remove('hidden'); $('status').textContent = 'Dein Entwurf ist auf diesem Gerät gespeichert. Der Moment deiner Freundin ist noch nicht synchronisiert.'; }
-  $('save').addEventListener('click',()=>{
-    const value = $('moment').value.trim();
-    if (!value) { $('moment').focus(); $('moment').setCustomValidity('Schreib erst deinen schönsten Moment auf.'); $('moment').reportValidity(); $('moment').setCustomValidity(''); return; }
-    try { localStorage.setItem(key,value); showDraft(value); $('moment').value=''; $('counter').textContent='0 / 1200'; $('privacyNote').textContent='Gespeichert nur auf diesem Gerät – noch nicht verschlüsselt übertragen oder mit deiner Freundin geteilt.'; }
-    catch (_) { alert('Der Entwurf konnte nicht gespeichert werden.'); }
+(() => {
+  const SUPABASE_URL = "https://nshajbljbmsuvpoxfixk.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_58GseeM1tBp11V94M-EaIQ_TkNMqwl4";
+
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const $ = id => document.getElementById(id);
+  let currentUser = null;
+  let roomId = localStorage.getItem("zu-room-id");
+  let inviteCode = sessionStorage.getItem("zu-invite-code");
+  let cryptoKey = null;
+
+  const show = (id, visible) => $(id).classList.toggle("hidden", !visible);
+  const message = (id, text, type = "") => {
+    $(id).textContent = text;
+    $(id).className = "message " + type;
+  };
+
+  function randomCode() {
+    const bytes = crypto.getRandomValues(new Uint8Array(24));
+    return Array.from(bytes, b => b.toString(16).padStart(2, "0")).join("");
+  }
+
+  function bytesToBase64(bytes) {
+    let binary = "";
+    for (const b of bytes) binary += String.fromCharCode(b);
+    return btoa(binary);
+  }
+
+  function base64ToBytes(value) {
+    return Uint8Array.from(atob(value), c => c.charCodeAt(0));
+  }
+
+  async function deriveKey(code, id) {
+    const material = await crypto.subtle.importKey(
+      "raw", new TextEncoder().encode(code), "PBKDF2", false, ["deriveKey"]
+    );
+    return crypto.subtle.deriveKey(
+      {
+        name: "PBKDF2",
+        salt: new TextEncoder().encode("zwischen-uns:" + id),
+        iterations: 310000,
+        hash: "SHA-256"
+      },
+      material,
+      { name: "AES-GCM", length: 256 },
+      false,
+      ["encrypt", "decrypt"]
+    );
+  }
+
+  async function encryptText(text) {
+    const nonce = crypto.getRandomValues(new Uint8Array(12));
+    const encrypted = await crypto.subtle.encrypt(
+      { name: "AES-GCM", iv: nonce },
+      cryptoKey,
+      new TextEncoder().encode(text)
+    );
+    return {
+      ciphertext: bytesToBase64(new Uint8Array(encrypted)),
+      nonce: bytesToBase64(nonce),
+      key_version: 1
+    };
+  }
+
+  async function decryptText(row) {
+    const decrypted = await crypto.subtle.decrypt(
+      { name: "AES-GCM", iv: base64ToBytes(row.nonce) },
+      cryptoKey,
+      base64ToBytes(row.ciphertext)
+    );
+    return new TextDecoder().decode(decrypted);
+  }
+
+  function setBusy(buttonId, busy) {
+    $(buttonId).disabled = busy;
+  }
+
+  async function createRoom() {
+    const code = randomCode();
+    const { data, error } = await db.rpc("create_private_room", {
+      p_invite_code: code
+    });
+    if (error) throw error;
+
+    roomId = data;
+    inviteCode = code;
+    cryptoKey = await deriveKey(code, roomId);
+    localStorage.setItem("zu-room-id", roomId);
+    sessionStorage.setItem("zu-invite-code", code);
+
+    $("inviteCode").textContent = code;
+    show("inviteSection", true);
+    await openJournal();
+  }
+
+  async function joinRoom() {
+    const code = $("inviteInput").value.trim();
+    if (code.length < 16) {
+      throw new Error("Der Einladungscode ist zu kurz.");
+    }
+    const { data, error } = await db.rpc("join_private_room", {
+      p_invite_code: code
+    });
+    if (error) throw error;
+
+    roomId = data;
+    inviteCode = code;
+    cryptoKey = await deriveKey(code, roomId);
+    localStorage.setItem("zu-room-id", roomId);
+    sessionStorage.setItem("zu-invite-code", code);
+    show("inviteSection", false);
+    await openJournal();
+  }
+
+  async function openJournal() {
+    if (!currentUser || !roomId || !cryptoKey) return;
+    show("auth", false);
+    show("roomSetup", false);
+    show("journal", true);
+    show("history", true);
+    show("account", true);
+    $("accountLabel").textContent = "Angemeldet als " + currentUser.email;
+    $("momentDate").value = new Date().toLocaleDateString("en-CA");
+    await loadMoments();
+  }
+
+  async function loadMoments() {
+    $("momentsList").textContent = "Momente werden geladen …";
+    const { data, error } = await db
+      .from("moments")
+      .select("id, entry_date, ciphertext, nonce, key_version, created_at")
+      .eq("room_id", roomId)
+      .order("entry_date", { ascending: false });
+
+    if (error) throw error;
+    const list = $("momentsList");
+    list.replaceChildren();
+
+    if (!data || data.length === 0) {
+      list.textContent = "Hier ist Platz für euren ersten gemeinsamen Moment. ♡";
+      return;
+    }
+
+    for (const row of data) {
+      const item = document.createElement("article");
+      item.className = "moment";
+      const date = document.createElement("div");
+      date.className = "date";
+      date.textContent = new Date(row.entry_date + "T12:00:00").toLocaleDateString("de-DE", {
+        day: "numeric", month: "long", year: "numeric"
+      });
+      const content = document.createElement("div");
+      try {
+        content.textContent = await decryptText(row);
+      } catch {
+        content.textContent = "Dieser Eintrag konnte nicht entschlüsselt werden. Prüfe den Einladungscode.";
+        content.className = "error";
+      }
+      item.append(date, content);
+      list.append(item);
+    }
+  }
+
+  async function refreshAuth() {
+    const { data, error } = await db.auth.getSession();
+    if (error) throw error;
+    currentUser = data.session?.user || null;
+
+    show("auth", !currentUser);
+    show("roomSetup", !!currentUser);
+    show("account", !!currentUser);
+    if (!currentUser) {
+      show("journal", false);
+      show("history", false);
+      show("inviteSection", false);
+      return;
+    }
+
+    if (roomId && inviteCode) {
+      try {
+        cryptoKey = await deriveKey(inviteCode, roomId);
+        await openJournal();
+      } catch (e) {
+        message("roomMessage", "Bitte tritt erneut mit deinem Einladungscode bei.", "error");
+        show("roomSetup", true);
+      }
+    } else {
+      show("roomSetup", true);
+      show("journal", false);
+      show("history", false);
+    }
+  }
+
+  $("authForm").addEventListener("submit", async event => {
+    event.preventDefault();
+    const button = $("authForm").querySelector("button");
+    setBusy("authForm", true);
+    button.disabled = true;
+    try {
+      const { data, error } = await db.auth.signInWithPassword({
+        email: $("email").value.trim(),
+        password: $("password").value
+      });
+      if (error) throw error;
+      currentUser = data.user;
+      message("authMessage", "Du bist angemeldet.", "success");
+      await refreshAuth();
+    } catch (e) {
+      message("authMessage", e.message || "Anmeldung fehlgeschlagen.", "error");
+    } finally {
+      button.disabled = false;
+    }
   });
-  $('clear').addEventListener('click',()=>{try{localStorage.removeItem(key);}catch(_){} $('savedArea').classList.add('hidden');$('savedText').textContent='';$('status').textContent='Dein lokaler Entwurf wurde gelöscht. Eine Synchronisierung ist noch nicht eingerichtet.';});
-  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+
+  $("register").addEventListener("click", async () => {
+    try {
+      const email = $("email").value.trim();
+      const password = $("password").value;
+      if (!email || password.length < 8) {
+        throw new Error("Bitte gib eine E-Mail-Adresse und ein Passwort mit mindestens 8 Zeichen ein.");
+      }
+      $("register").disabled = true;
+      const { data, error } = await db.auth.signUp({ email, password });
+      if (error) throw error;
+      if (!data.session) {
+        message("authMessage", "Bitte bestätige deine E-Mail-Adresse über den zugesandten Link. Danach kannst du dich anmelden.", "success");
+      } else {
+        currentUser = data.user;
+        await refreshAuth();
+      }
+    } catch (e) {
+      message("authMessage", e.message || "Registrierung fehlgeschlagen.", "error");
+    } finally {
+      $("register").disabled = false;
+    }
+  });
+
+  $("createRoom").addEventListener("click", async () => {
+    setBusy("createRoom", true);
+    try {
+      await createRoom();
+      message("roomMessage", "Dein Raum wurde erstellt.", "success");
+    } catch (e) {
+      message("roomMessage", e.message || "Der Raum konnte nicht erstellt werden.", "error");
+    } finally {
+      setBusy("createRoom", false);
+    }
+  });
+
+  $("joinRoom").addEventListener("click", async () => {
+    setBusy("joinRoom", true);
+    try {
+      await joinRoom();
+      message("roomMessage", "Du bist dem Raum beigetreten.", "success");
+    } catch (e) {
+      message("roomMessage", e.message || "Beitritt fehlgeschlagen.", "error");
+    } finally {
+      setBusy("joinRoom", false);
+    }
+  });
+
+  $("copyInvite").addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(inviteCode);
+      message("roomMessage", "Einladungscode kopiert.", "success");
+    } catch {
+      message("roomMessage", "Bitte markiere den Code und kopiere ihn manuell.", "error");
+    }
+  });
+
+  $("saveMoment").addEventListener("click", async () => {
+    const text = $("momentText").value.trim();
+    const date = $("momentDate").value;
+    if (!text || !date) {
+      message("saveMessage", "Bitte gib einen Text und ein Datum ein.");
+      return;
+    }
+
+    setBusy("saveMoment", true);
+    try {
+      const encrypted = await encryptText(text);
+      const { error } = await db.from("moments").insert({
+        room_id: roomId,
+        author_id: currentUser.id,
+        entry_date: date,
+        ...encrypted
+      });
+      if (error) throw error;
+      $("momentText").value = "";
+      message("saveMessage", "Dein Moment wurde gespeichert. ♡", "success");
+      await loadMoments();
+    } catch (e) {
+      message("saveMessage", e.message || "Speichern fehlgeschlagen.", "error");
+    } finally {
+      setBusy("saveMoment", false);
+    }
+  });
+
+  $("refresh").addEventListener("click", async () => {
+    try {
+      await loadMoments();
+    } catch (e) {
+      message("saveMessage", e.message || "Die Momente konnten nicht geladen werden.", "error");
+    }
+  });
+
+  $("leaveRoom").addEventListener("click", async () => {
+    if (!confirm("Den Raum nur auf diesem Gerät verlassen? Die gespeicherten Einträge werden nicht gelöscht.")) return;
+    localStorage.removeItem("zu-room-id");
+    sessionStorage.removeItem("zu-invite-code");
+    roomId = null;
+    inviteCode = null;
+    cryptoKey = null;
+    show("journal", false);
+    show("history", false);
+    show("inviteSection", false);
+    show("roomSetup", !!currentUser);
+  });
+
+  $("logout").addEventListener("click", async () => {
+    const { error } = await db.auth.signOut();
+    if (error) {
+      message("authMessage", error.message, "error");
+      return;
+    }
+    currentUser = null;
+    cryptoKey = null;
+    show("auth", true);
+    show("roomSetup", false);
+    show("journal", false);
+    show("history", false);
+    show("account", false);
+    show("inviteSection", false);
+  });
+
+  db.auth.onAuthStateChange(() => {
+    setTimeout(() => refreshAuth().catch(e => {
+      message("authMessage", e.message || "Verbindung fehlgeschlagen.", "error");
+    }), 0);
+  });
+
+  refreshAuth().catch(e => {
+    message("authMessage", e.message || "Die App konnte nicht gestartet werden.", "error");
+  });
+})();
 </script>
 </body>
 </html>
